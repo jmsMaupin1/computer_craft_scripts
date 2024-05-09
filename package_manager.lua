@@ -18,7 +18,7 @@ end
 
 local function get_available_scripts()
 	print("connecting to github to grab scripts")
-	url = "https://github.com/jmsMaupin1/computer_craft_scripts"
+	url = "https://api.github.com/repos/jmsMaupin1/computer_craft_scripts/git/trees/main?recursive=1"
 
 	local res = http.get(url, nil, true)
 	if not res then
@@ -26,7 +26,10 @@ local function get_available_scripts()
 	end
 
 	local sRes = res.readAll()
-	print(sRes)
+	local files_table = texturils.serialize(sRes)
+	for i = 1,#files_table["tree"] do
+		print(files_table["tree"][i]["path"])
+	end
 end
 
 local function get_script(file_name)
