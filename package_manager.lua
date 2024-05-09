@@ -1,7 +1,8 @@
 -- Not an actual package manager in the traditional sense, will basically just work to get the files from this repository
 local function printUsage()
 	print("Usage:")
-	print("jpm install <script_name>")
+	print("<package_manager scripts name> i <script_name>")
+	print("<package_manager scripts name> l")
 end
 
 local tArgs = { ... }
@@ -15,7 +16,30 @@ if not http then
 	print("set http_enable to true in ComputerCraft.cfg")
 end
 
-local function get(file_name)
+local function strip_file_ext(file_name)
+	return file_name:match("(.+)%..+$") or file_name
+end
+
+local function get_available_scripts()
+	print("connecting to github to grab scripts")
+	url = "https://api.github.com/repos/jmsMaupin1/computer_craft_scripts/git/trees/main?recursive=1"
+
+	local res = http.get(url, nil, true)
+	if not res then
+		print("get fucked")
+	end
+
+	local sRes = res.readAll()
+	local files_table = textutils.unserializeJSON(sRes)
+	for i = 1,#files_table["tree"] do
+		file_name = files_table["tree"][i]["path"]
+		if not string.find(file_name, "README") then
+			print(strip_file_ext(file_name))
+		end
+	end
+end
+
+local function get_script(file_name)
 	print("connecting to github to grab " .. file_name .. "... ")
 	url = "https://raw.githubusercontent.com/jmsMaupin1/computer_craft_scripts/main/"  .. file_name .. ".lua"
 
@@ -42,7 +66,7 @@ end
 
 local function install(script_name, file_name)
 	local sPath = shell.resolve(file_name)
-	local res = get(script_name)
+	local res = get_script(script_name)
 
 	local file = fs.open(sPath, "wb")
 	file.write(res)
@@ -51,11 +75,17 @@ local function install(script_name, file_name)
 	print("Downloaded script as " .. file_name)
 end
 
-if tArgs[1] == "install" then
+if tArgs[1] == "i" then
 	local file_name = tArgs[2] .. ".lua"
 	if tArgs[3] then
 		file_name = tArgs[3]
 	end
 
 	install(tArgs[2], file_name)
+	return nil
+end
+
+if tArgs[1] == "l" then
+	get_available_scripts()
+	return nil
 end
