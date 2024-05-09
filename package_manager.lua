@@ -77,7 +77,7 @@ local function get_all_branches()
 	local sRes = res.readAll()
 	local branch_table = textutils.unserializeJSON(sRes)
 	for i = 1,#branch_table do
-		print(branch_table[i])
+		print(branch_table[i].name)
 	end
 end
 
