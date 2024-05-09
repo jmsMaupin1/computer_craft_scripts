@@ -35,4 +35,5 @@ function inventory.consolidate()
 	
 end
 
+inventory.scan()
 return inventory
