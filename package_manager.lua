@@ -9,6 +9,8 @@ local function printUsage()
 	print("<package_manager scripts name> --config")
 end
 
+local CONFIG_NAME = "jpm.json"
+
 local jpm_config = {
 	user="jmsMaupin1",
 	repo="computer_craft_scripts",
@@ -24,6 +26,37 @@ end
 if not http then
 	print("jpm requires the http API")
 	print("set http_enable to true in ComputerCraft.cfg")
+end
+
+local function read_file(file_name)
+	local sPath = shell.resolve(file_name)
+	if not sPath then
+		return nil, "No file found"
+	end
+
+	local file = fs.open(file_name, "r")
+	return file.readAll(), nil 
+end
+
+local function write_file(file_name, contents)
+	local sPath = shell.resolve(file_name)
+	local file = fs.open(sPath, "wb")
+	file.write(contents)
+	file.close()
+end
+
+local function load_config()
+	local config, err = read_file(CONFIG_NAME)
+
+	if err then
+		return config
+	end
+
+	return textutils.unserializeJSON(config)
+end
+
+local function save_config()
+	write_file(CONFIG_NAME, textutils.seralizeJSON(jpm_config))
 end
 
 local function strip_file_ext(file_name)
@@ -75,15 +108,13 @@ local function get_script(file_name)
 end
 
 local function install(script_name, file_name)
-	local sPath = shell.resolve(file_name)
 	local res = get_script(script_name)
-
-	local file = fs.open(sPath, "wb")
-	file.write(res)
-	file.close()
+	write_file(file_name, res)
 
 	print("Downloaded script as " .. file_name)
 end
+
+jpm_config = load_config()
 
 -- Theres definitely a better way to deal with arguments
 -- this is very quick and dirty for now
@@ -104,16 +135,19 @@ end
 
 if tArgs[1] == "config.user" then
 	jpm_config.user = tArgs[2]
+	save_config()
 	return nil
 end
 
 if tArgs[1] == "config.repo" then
 	jpm_config.repo = tArgs[2]
+	save_config()
 	return nil
 end
 
 if tArgs[1] == "config.branch" then
 	jpm_config.branch = tArgs[2]
+	save_config()
 	return nil
 end
 
