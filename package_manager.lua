@@ -16,6 +16,10 @@ if not http then
 	print("set http_enable to true in ComputerCraft.cfg")
 end
 
+local function strip_file_ext(file_name)
+	return file_name:match("(.+)%..+$") or file_name
+end
+
 local function get_available_scripts()
 	print("connecting to github to grab scripts")
 	url = "https://api.github.com/repos/jmsMaupin1/computer_craft_scripts/git/trees/main?recursive=1"
@@ -30,7 +34,7 @@ local function get_available_scripts()
 	for i = 1,#files_table["tree"] do
 		file_name = files_table["tree"][i]["path"]
 		if not string.find(file_name, "README") then
-			print(string.sub(files_table["tree"][i]["path"], 1, -4))
+			print(strip_file_ext(file_name))
 		end
 	end
 end
