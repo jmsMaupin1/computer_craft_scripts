@@ -29,13 +29,14 @@ if not http then
 end
 
 local function read_file(file_name)
-	local sPath = shell.resolve(file_name)
-	if not sPath then
-		return nil, "No file found"
+	local sPath = shell.resolve(file_name)	
+	local file = fs.open(file_name, "r")
+
+	if not file then
+		return nil, "file not found"
 	end
 
-	local file = fs.open(file_name, "r")
-	return file.readAll(), nil 
+	return file.readAll(), nil
 end
 
 local function write_file(file_name, contents)
