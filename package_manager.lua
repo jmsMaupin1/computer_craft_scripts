@@ -28,7 +28,10 @@ local function get_available_scripts()
 	local sRes = res.readAll()
 	local files_table = textutils.unserializeJSON(sRes)
 	for i = 1,#files_table["tree"] do
-		print(files_table["tree"][i]["path"])
+		file_name = files_table["tree"][i]["path"]
+		if not string.find(file_name, "README") then
+			print(string.sub(files_table["tree"][i]["path"], 1, -4))
+		end
 	end
 end
 
