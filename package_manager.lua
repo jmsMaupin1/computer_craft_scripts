@@ -3,7 +3,17 @@ local function printUsage()
 	print("Usage:")
 	print("<package_manager scripts name> i <script_name>")
 	print("<package_manager scripts name> l")
+	print("<package_manager scripts name> --config.user <user_name>")
+	print("<package_manager scripts name> --config.repo <repo_name>")
+	print("<package_manager scripts name> --config.branch <branch_name>")
+	print("<package_manager scripts name> --config")
 end
+
+local jpm_config = {
+	user="jmsMaupin1",
+	repo="computer_craft_scripts",
+	branch="main"
+}
 
 local tArgs = { ... }
 if #tArgs < 1 then
@@ -22,17 +32,17 @@ end
 
 local function get_available_scripts()
 	print("connecting to github to grab scripts")
-	url = "https://api.github.com/repos/jmsMaupin1/computer_craft_scripts/git/trees/main?recursive=1"
+	local url = "https://api.github.com/repos/" .. jpm_config.user .. "/" .. jpm_config.repo .. "/git/trees/" .. jpm_config.branch .. "?recursive=1"
 
 	local res = http.get(url, nil, true)
 	if not res then
-		print("get fucked")
+		printError("Failed getting scripts")
 	end
 
 	local sRes = res.readAll()
 	local files_table = textutils.unserializeJSON(sRes)
 	for i = 1,#files_table["tree"] do
-		file_name = files_table["tree"][i]["path"]
+		local file_name = files_table["tree"][i]["path"]
 		if not string.find(file_name, "README") then
 			print(strip_file_ext(file_name))
 		end
@@ -41,7 +51,7 @@ end
 
 local function get_script(file_name)
 	print("connecting to github to grab " .. file_name .. "... ")
-	url = "https://raw.githubusercontent.com/jmsMaupin1/computer_craft_scripts/main/"  .. file_name .. ".lua"
+	local url = "https://raw.githubusercontent.com/" .. jpm_config.user .. "/" .. jpm_config.repo .. "/" .. jpm_config.branch .. "/"  .. file_name .. ".lua"
 
 	local ok, err = http.checkURL(url)
 	if not ok then
@@ -75,6 +85,8 @@ local function install(script_name, file_name)
 	print("Downloaded script as " .. file_name)
 end
 
+-- Theres definitely a better way to deal with arguments
+-- this is very quick and dirty for now
 if tArgs[1] == "i" then
 	local file_name = tArgs[2] .. ".lua"
 	if tArgs[3] then
@@ -89,3 +101,23 @@ if tArgs[1] == "l" then
 	get_available_scripts()
 	return nil
 end
+
+if tArgs[1] == "config.user" then
+	jpm_config.user = tArgs[2]
+	return nil
+end
+
+if tArgs[1] == "config.repo" then
+	jpm_config.repo = tArgs[2]
+	return nil
+end
+
+if tArgs[1] == "config.branch" then
+	jpm_config.branch = tArgs[2]
+	return nil
+end
+
+if tArgs[1] == "config" then
+	print(textutils.serialize(jpm_config))
+end
+
