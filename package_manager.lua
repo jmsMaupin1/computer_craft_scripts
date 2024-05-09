@@ -26,7 +26,7 @@ local function get_available_scripts()
 	end
 
 	local sRes = res.readAll()
-	local files_table = texturils.serialize(sRes)
+	local files_table = textutils.serialize(sRes)
 	for i = 1,#files_table["tree"] do
 		print(files_table["tree"][i]["path"])
 	end
