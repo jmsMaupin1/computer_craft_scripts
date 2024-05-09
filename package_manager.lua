@@ -50,14 +50,14 @@ local function load_config()
 	local config, err = read_file(CONFIG_NAME)
 
 	if err then
-		return config
+		return jpm_config
 	end
 
 	return textutils.unserializeJSON(config)
 end
 
 local function save_config()
-	write_file(CONFIG_NAME, textutils.seralizeJSON(jpm_config))
+	write_file(CONFIG_NAME, textutils.serializeJSON(jpm_config))
 end
 
 local function strip_file_ext(file_name)
