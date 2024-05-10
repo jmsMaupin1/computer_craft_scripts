@@ -31,8 +31,8 @@ if not http then
 end
 
 local function read_file(file_name)
-	local sPath = shell.resolve(file_name)	
-	local file = fs.open(file_name, "r")
+	local sPath = shell.resolve(file_name)
+	local file = fs.open(sPath, "r")
 
 	if not file then
 		return nil, "file not found"
