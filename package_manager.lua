@@ -127,7 +127,6 @@ end
 local function install(script_name, file_name)
 	local res = get_script(script_name)
 	write_file(file_name, res)
-
 	print("Downloaded script as " .. file_name)
 end
 
@@ -142,6 +141,11 @@ if tArgs[1] == "i" then
 	end
 
 	install(tArgs[2], file_name)
+	return nil
+end
+
+if tArgs[1] == "l" then
+	get_available_scripts()
 	return nil
 end
 
